@@ -2,44 +2,48 @@ const usersRouter = require('express').Router();
 const { userLogin, userRegister } = require('../utils/helpers');
 
 const usersRouterWrapper = (db) => {
-
-  // TEST ROUTE - CAN REMOVE
-  usersRouter.get('/', (req, res) => {
-    // TEST API QUERY
-
-    const queryString = `
-      SELECT * FROM users;
-    `
-    db
-      .query(queryString)
-      .then((data) => res.status(200).json(data.rows))
-      .catch((err) => res.status(400).json(err.stack));
-  });  
+  const databaseHelper = require('../utils/database')(db);
 
   // login
   usersRouter.post('/login', (req, res) => {
-
-  });
-
-  // render login page
-  usersRouter.get('/login', (req, res) => {
-
+    const { username, password } = req.body;
+    // return the user entry if applicable
+    databaseHelper.findUserByUsername(username)
+      .then((user) => {
+        const loggedIn = userLogin(password, user.password);
+        if (loggedIn) {
+          req.session.userID = user.id;
+          res.redirect("/")
+        } else {
+          res.status(400).json({ error: 'unauthenticated' })
+        }
+      })
+      .catch(err => res.status(400).json(err.stack));
   });
 
   // register
   usersRouter.post('/register', (req, res) => {
-
+    const { username, password } = req.body;
+    databaseHelper.findUserByUsername(username)
+      .then(data => {
+        if (!data) {
+        return databaseHelper.createUser(username, password)
+        .then((createdUser => {
+          req.session.userID = createdUser.id;
+          res.redirect("/")
+          return;
+        }))
+        } else {
+          res.status(500).json({ error: "username already taken" });
+        }
+      })
+      .catch(err => console.log(err.stack));
   });
 
-  // render register
-  usersRouter.get('/register', (req, res) => {
-
-  });
-
-  // // profile page DO LATER!
-  // usersRouter.post('/profile', (req, res) => {
-    
-  // });
+  usersRouter.post('/logout', (req, res) => {
+    req.session = null;
+    res.redirect(301, '/');
+  })
 
   return usersRouter;
 };

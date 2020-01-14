@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const sass = require('node-sass-middleware');
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
+const cors = require('cors');
 
 const dbParams = require('./utils/dbParams');
 
@@ -21,10 +22,11 @@ db.connect();
 
 // setting middleware
 app.set(morgan('dev'));
+app.set(cors());
 app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
-  keys: ['username'],
+  keys: ['userID'],
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

@@ -6,14 +6,15 @@ const gamesRouterWrapped = (db) => {
   
   // game_states update
   gamesRouter.post('/state', (req, res) => {
-    const { player_id, game_id } = req;
+    const { player_id, game_id } = req.body;
     
     // make a call to dealer
 
-    // change to update
     const queryString = `
       SELECT * FROM game_states;
     `
+
+    // update the game_state entry
     db
       .query(queryString)
       .then((data) => res.status(200).json(data.rows))
@@ -23,12 +24,13 @@ const gamesRouterWrapped = (db) => {
 
   // game_states get
   gamesRouter.get('/state', (req, res) => {
-    const { player_id, game_id } = req;
+    const { player_id, game_id } = req.body;
 
     // change as necessary
     const queryString = `
       SELECT * FROM game_states;
     `
+    // return the game_state
     db
       .query(queryString)
       .then((data) => res.status(200).json(data.rows))
@@ -38,12 +40,13 @@ const gamesRouterWrapped = (db) => {
 
   // player_hand update
   gamesRouter.post('/hand', (req, res) => {
-    const { player_id, game_id } = req;
+    const { player_id, game_id } = req.body;
 
     // change as necessary
     const queryString = `
       SELECT * FROM game_states;
     `
+    // update players hand
     db
       .query(queryString)
       .then((data) => res.status(200).json(data.rows))
@@ -53,12 +56,13 @@ const gamesRouterWrapped = (db) => {
 
     // player_hand get
   gamesRouter.get('/hand', (req, res) => {
-    const { player_id, game_id } = req;
+    const { player_id, game_id } = req.body;
 
     // change as necessary
     const queryString = `
       SELECT * FROM game_states;
     `
+    // return players hand
     db
       .query(queryString)
       .then((data) => res.status(200).json(data.rows))
